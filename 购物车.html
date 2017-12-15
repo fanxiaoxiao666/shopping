@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+      
+    </style>
+    <script src="js/vue.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <h2>购物清单</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="quanxuan" v-model="check" v-on:click="checkAll">
+                        <label for="quanxuan" >全选</label>
+                    </th>
+                    <th></th>
+                    <th>商品</th>
+                    <th>数量</th>
+                    <th>单价</th>
+                    <th>金额</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(v,index) in list">
+
+                    <td><input type="checkbox"  value="0" class="in1" v-on:click="count2(index)"></td>
+                    <td>
+                        <img :src="v.imgUrl">
+                    </td>
+                    <td>
+                        <p>{{v.title}}</p><p>{{v.logo}}</p><p>{{v.detail}}</p><p>{{v.location}}</p>
+                    </td>
+                        <td ><span v-on:click="click1(index)" >-</span><span >{{v.numb}}</span><span v-on:click="click2(index)">+</span></td>
+                        <td>{{v.price}}</td>
+                        <td>{{v.total1}}</td>
+                        <td @click="delete2(index)">删除</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td><span v-on:click="delete1">删除所选商品</span></td>
+                    <td>继续购物</td>
+                    <td>{{count1}}件商品总计(不含运费):{{total}}</td>
+                    <td colspan="4"><button>去结算</button></td>
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+</body>
+</html>
+<script>
+    var oIn=document.getElementsByClassName("in1")
+    var app=new Vue({
+        el:"#app",
+        data:{
+            list:[
+                {imgUrl:"image/09.png",price:300,title:"斯文 甘油|丙三醇",logo:"品牌:产地:韩国",detail:"规格/纯度:99.7% 起定量:215千克", location:"上海仓储",numb:0,total1:0},
+                {imgUrl:"image/09.png",price:500,title:"斯文 甘油|丙三醇1",logo:"品牌:产地:韩国",detail:"规格/纯度:99.7% 起定量:215千克", location:"上海仓储",numb:0,total1:0}
+            ],
+            check:false,
+            count1:0,
+            total:0
+        },
+
+        methods:
+        {
+            checkAll:function(){
+                if(this.check==false)
+                {
+                    for(var j=0;j<oIn.length;j++)
+                    {
+                        oIn[j].checked=true;
+                        this.count1=this.list.length;
+                    }
+                }
+                else
+                {
+                    for(var j=0;j<oIn.length;j++)
+                    {
+                        oIn[j].checked=false;
+                        this.count1=0
+                    }
+                }
+
+               /* for(var j=0;j<this.list.length;j++)
+                {
+                    oIn[j].checked=!this.check
+                }*/
+            },
+            delete1:function(index)
+            {
+                for(var i=0;i<this.list.length;i++)
+                {
+                     if(oIn[i].checked)
+                    {
+                        this.list.splice(i,1);
+                        i--
+                    }
+                }
+            },
+            //判断全选按钮是否被选中。
+            count2:function(v)
+            {
+                    if(oIn[v].checked)
+                    {
+                        this.count1++;
+                        this.total+=this.list[v].total1
+                    }
+                    else
+                    {
+                        this.count1--;
+                        this.total-=this.list[v].total1
+                    }
+                if(this.count1==this.list.length)
+                {
+                    this.check=true
+                }
+                else{
+                    this.check=false
+                }
+            },
+
+          click1:function(m)
+           {
+               this.list[m].numb--;
+               if(this.list[m].numb<0)
+               {
+                   this.list[m].numb=0
+               }
+               this.list[m].total1=this.list[m].numb* this.list[m].price;
+               this.total-=this.list[m].price
+           },
+            click2:function(m)
+            {
+                this.list[m].numb++
+
+
+                this.list[m].total1=this.list[m].numb* this.list[m].price;
+
+                this.total+=this.list[m].price
+
+            },
+            delete2:function(index)
+            {
+                this.list.splice(index,1)
+            }
+        }
+    })
+</script>
